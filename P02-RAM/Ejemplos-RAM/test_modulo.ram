@@ -1,0 +1,19 @@
+# Prueba para la instrucción módulo
+
+# 8 % 3 = 2
+LOAD =3
+STORE 1
+LOAD =8
+MOD 1
+STORE 2
+WRITE 2
+
+# 8 % 2 = 0
+LOAD =2
+STORE 1
+LOAD =8
+MOD 1
+STORE 2
+WRITE 2
+
+HALT

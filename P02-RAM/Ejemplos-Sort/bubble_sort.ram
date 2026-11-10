@@ -1,0 +1,132 @@
+# BubbleSort en máquina RAM
+#
+# Array A en registros R10..R(9+n)
+# Acceso dinámico: R9 = 9+i → *9 apunta a A[i]
+#
+# Cinta de entrada: n seguido de los n elementos
+#
+# Registros:
+#   R2 = n
+#   R3 = i  (bucle externo)
+#   R4 = j  (bucle interno, baja de n hasta i+1)
+#   R6 = temp
+#   R7 = A[j-1]
+#   R8 = A[j]
+#   R9 = puntero
+
+# ── Leer n ───────────────────────────────────────────────────────────────────
+        READ 2
+
+# ── Cargar A[1..n] en R10..R(9+n) ────────────────────────────────────────────
+        LOAD =1
+        STORE 3
+
+carga:  LOAD 3
+        SUB 2
+        JGTZ fin_carga
+
+        READ 7              # R7 = siguiente valor
+
+        LOAD =9
+        ADD 3
+        STORE 9             # R9 = 9 + j
+        LOAD 7
+        STORE *9            # A[j] = R7
+
+        LOAD 3
+        ADD =1
+        STORE 3
+        JUMP carga
+
+fin_carga:
+
+# ── BubbleSort ────────────────────────────────────────────────────────────────
+        LOAD =1
+        STORE 3             # i = 1
+
+for_i:  # if i > n-1 → fin  ↔  i - n + 1 > 0
+        LOAD 3
+        SUB 2
+        ADD =1
+        JGTZ fin_sort
+
+        LOAD 2
+        STORE 4             # j = n
+
+for_j:  # if j <= i → next_i  ↔  j - i - 1 < 0
+        LOAD 4
+        SUB 3
+        SUB =1
+        JGTZ do_compare
+        JZERO do_compare
+        JUMP next_i
+
+do_compare:
+        # R7 = A[j-1]: R9 = 8 + j
+        LOAD =8
+        ADD 4
+        STORE 9
+        LOAD *9
+        STORE 7
+
+        # R8 = A[j]: R9 = 9 + j
+        LOAD =9
+        ADD 4
+        STORE 9
+        LOAD *9
+        STORE 8
+
+        # if A[j-1] > A[j]
+        LOAD 7
+        SUB 8
+        JGTZ swap
+        JUMP dec_j
+
+swap:   # temp = A[j-1]
+        LOAD 7
+        STORE 6
+
+        # A[j-1] = A[j]: R9 = 8 + j
+        LOAD =8
+        ADD 4
+        STORE 9
+        LOAD 8
+        STORE *9
+
+        # A[j] = temp: R9 = 9 + j
+        LOAD =9
+        ADD 4
+        STORE 9
+        LOAD 6
+        STORE *9
+
+dec_j:  LOAD 4
+        SUB =1
+        STORE 4             # j--
+        JUMP for_j
+
+next_i: LOAD 3
+        ADD =1
+        STORE 3             # i++
+        JUMP for_i
+
+# ── Escribir resultado ────────────────────────────────────────────────────────
+fin_sort:
+        LOAD =1
+        STORE 3
+
+escribe: LOAD 3
+         SUB 2
+         JGTZ fin
+
+         LOAD =9
+         ADD 3
+         STORE 9
+         WRITE *9
+
+         LOAD 3
+         ADD =1
+         STORE 3
+         JUMP escribe
+
+fin:    HALT

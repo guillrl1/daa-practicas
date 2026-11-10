@@ -1,0 +1,127 @@
+# Ordenación por Inserción en máquina RAM
+#
+# Array A en registros R10..R(9+n)
+# Acceso dinámico: R9 = 9+i → *9 apunta a A[i]
+#
+# Cinta de entrada: n seguido de los n elementos
+#
+# Registros:
+#   R2 = n
+#   R3 = j  (bucle externo)
+#   R4 = i  (bucle while)
+#   R5 = key
+#   R6 = valor auxiliar
+#   R9 = puntero
+
+# Leer n
+        READ 2
+
+# ── Cargar A[1..n] en R10..R(9+n) ────────────────────────────────────────────
+# Estrategia: leer valor en R7, luego calcular R9=9+j, luego STORE *9
+        LOAD =1
+        STORE 3
+
+carga:  LOAD 3
+        SUB 2
+        JGTZ fin_carga
+
+        READ 7              # R7 = siguiente valor de la cinta
+
+        LOAD =9
+        ADD 3
+        STORE 9             # R9 = 9 + j  (apunta a A[j])
+
+        LOAD 7
+        STORE *9            # A[j] = R7
+
+        LOAD 3
+        ADD =1
+        STORE 3
+        JUMP carga
+
+fin_carga:
+
+# ── Insertion Sort ────────────────────────────────────────────────────────────
+        LOAD =2
+        STORE 3             # j = 2
+
+for_j:  LOAD 3
+        SUB 2
+        JGTZ fin_sort       # if j > n → fin
+
+        # key = A[j]
+        LOAD =9
+        ADD 3
+        STORE 9             # R9 = 9 + j
+        LOAD *9
+        STORE 5             # R5 = key
+
+        # i = j - 1
+        LOAD 3
+        SUB =1
+        STORE 4
+
+while:  LOAD 4
+        JZERO end_while     # if i == 0 → salir
+
+        # R0 = A[i] - key
+        LOAD =9
+        ADD 4
+        STORE 9             # R9 = 9 + i
+        LOAD *9             # R0 = A[i]
+        SUB 5               # R0 = A[i] - key
+        JGTZ shift
+        JUMP end_while
+
+shift:  # R6 = A[i]
+        LOAD =9
+        ADD 4
+        STORE 9
+        LOAD *9
+        STORE 6             # R6 = A[i]
+
+        # A[i+1] = A[i]
+        LOAD =10
+        ADD 4
+        STORE 9             # R9 = 10 + i  (apunta a A[i+1])
+        LOAD 6
+        STORE *9
+
+        LOAD 4
+        SUB =1
+        STORE 4             # i--
+        JUMP while
+
+end_while:
+        # A[i+1] = key
+        LOAD =10
+        ADD 4
+        STORE 9             # R9 = 10 + i
+        LOAD 5
+        STORE *9
+
+        LOAD 3
+        ADD =1
+        STORE 3             # j++
+        JUMP for_j
+
+# ── Escribir resultado ────────────────────────────────────────────────────────
+fin_sort:
+        LOAD =1
+        STORE 3
+
+escribe: LOAD 3
+         SUB 2
+         JGTZ fin
+
+         LOAD =9
+         ADD 3
+         STORE 9
+         WRITE *9
+
+         LOAD 3
+         ADD =1
+         STORE 3
+         JUMP escribe
+
+fin:    HALT
