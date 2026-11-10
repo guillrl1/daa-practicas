@@ -1,0 +1,6 @@
+{
+	"class": "BinaryDivideAndConquer",
+	"smallSolver": {
+		"class": "DynamicProgramming"
+	}
+}

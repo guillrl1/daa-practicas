@@ -1,0 +1,9 @@
+{
+	"class": "LocalSearch",
+	"baseSolver": {
+		"class": "BinaryDivideAndConquer",
+		"smallSolver": {
+			"class": "DynamicProgramming"
+		}
+	}
+}
